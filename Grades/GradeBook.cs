@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Grades
 {
-    class GradeBook
+    // adding public keyword for unit tests
+    public class GradeBook
     {
         public GradeBook()
         {
+            _name = "Bree-yon"; // just to envoke the NameChanged delegate
             grades = new List<float>();
         }
 
@@ -42,6 +44,38 @@ namespace Grades
         // Don't need to write it like above since we made a GradeBook class w/grade declaration
         private List<float> grades;
 
+        //public string Name;
+        //public string Name { get; set; } // works same as above but makes it a Property instead of a Field
+        public string Name // prevents null setting, unlike above
+        {
+            get { return _name; }
+            set
+            {
+                if (!String.IsNullOrEmpty(value))
+                {
+                    // insert a delegate to announce name change
+                    if (_name != value)
+                    {
+                        NameChangedEventArgs args = new NameChangedEventArgs();
+                        args.ExistingName = _name;
+                        args.NewName = value;
+                        NameChanged(this, args); // this references the object sender
+                    }
+                    _name = value;
+                }
+            }
+        }
+
+        private string _name;
+
+        // so since Name is publicly accessible and can be changed externally, we make it a property
+        // but grades List is private to this class and we dont' want it changed externally.
+
+
+        // delegate stuff (think pub/sub)
+        //public NameChangedDelegate NameChanged;
+        //makes the delegate an event! Preferred
+        public event NameChangedDelegate NameChanged; 
     }
 } 
 
